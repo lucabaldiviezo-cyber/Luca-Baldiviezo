@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luca Baldiviezo - Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Colores personalizados para LucAI */
+        .bg-crimson-600 { background-color: #dc2626; }
+        .text-crimson-400 { color: #f87171; }
+        .border-crimson-600\/20 { border-color: rgba(220, 38, 38, 0.2); }
+        .bg-crimson-600\/10 { background-color: rgba(220, 38, 38, 0.1); }
+        .hover\:bg-crimson-600\/20:hover { background-color: rgba(220, 38, 38, 0.2); }
+
+        /* Estilos de perspectiva para el efecto WOW 3D */
+        .perspective-container {
+            perspective: 1200px;
+        }
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+        
+        /* Empuje nativo en el eje Z para que floten sin romper el puntero */
+        .layer-z-fast {
+            transform: translateZ(30px);
+        }
+        .layer-z-buttons {
+            transform: translateZ(45px);
+        }
+
+        /* Efecto de brillo y transición sutil para las tarjetas de proyectos */
+        #lucai-project-card, #auto-project-card {
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
+            will-change: transform, box-shadow;
+        }
+
+        /* Brillo rojo adaptativo para LucAI */
+        #lucai-project-card:hover {
+            border-color: rgba(220, 38, 38, 0.4) !important;
+            box-shadow: 0 10px 30px -10px rgba(220, 38, 38, 0.25), 0 4px 25px rgba(0, 0, 0, 0.35) !important;
+        }
+
+        /* Brillo púrpura adaptativo para Automatizaciones */
+        #auto-project-card:hover {
+            border-color: rgba(168, 85, 247, 0.4) !important;
+            box-shadow: 0 10px 30px -10px rgba(168, 85, 247, 0.25), 0 4px 25px rgba(0, 0, 0, 0.35) !important;
+        }
+    </style>
+    <script>
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.addEventListener('beforeunload', () => {
+            window.scrollTo(0, 0);
+        });
+    </script>
+</head>
+<body class="bg-[#f1f5f9] text-[#0f172a] dark:bg-[#090b10] dark:text-white min-h-screen flex justify-center items-start py-14 px-4 relative overflow-x-hidden">
+
+    <div class="w-full max-w-2xl space-y-8 perspective-container">
+        
+        <div class="flex items-center justify-between bg-white dark:bg-[#121620] p-6 rounded-[30px] border border-gray-200/80 dark:border-gray-800/70 shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] backdrop-blur-md transition-all duration-300">
+            <div class="flex items-center space-x-5">
+                <div class="relative">
+                    <img src="https://i.ibb.co/HLCzqV6X/Captura-de-pantalla-2026-06-23-202642.png" class="w-20 h-20 rounded-full border-2 border-gray-200 dark:border-gray-700/60 object-cover shadow-sm">
+                    <span class="absolute bottom-0.5 right-0.5 w-4.5 h-4.5 bg-green-500 border-2 border-white dark:border-[#14171f] rounded-full"></span>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Luca Baldiviezo</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold tracking-wide mt-0.5">Builder • Salta, ARG</p>
+                </div>
+            </div>
+            <button onclick="cambiarModo()" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white p-3.5 rounded-full bg-gray-100 dark:bg-gray-800/60 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-200 shadow-sm cursor-pointer active:scale-95">
+                <i id="theme-toggle-icon" class="fa-solid fa-moon text-lg"></i>
+            </button>
+        </div>
+
+        <div id="intro-titles" class="space-y-1.5 py-1 px-1">
+            <h2 class="text-4xl font-extrabold tracking-tight sm:text-5xl">Construyo sistemas.</h2>
+            <h2 class="text-3xl font-extrabold tracking-tight text-gray-400 dark:text-gray-500 sm:text-5xl leading-tight">Polifacético.</h2>
+        </div>
+
+        <div id="hero-card" class="bg-blue-600 dark:bg-[#1d4ed8] p-8 md:p-10 rounded-[32px] relative overflow-hidden border border-blue-500/40 dark:border-blue-500/40 shadow-xl dark:shadow-[0_10px_30px_rgba(29,78,216,0.2)] text-white opacity-0 preserve-3d">
+            <div class="absolute -right-8 -bottom-8 w-56 h-56 bg-blue-400 dark:bg-blue-400 rounded-full opacity-30 blur-2xl pointer-events-none"></div>
+            
+            <div class="flex justify-between items-center mb-8">
+                <span class="bg-blue-700 dark:bg-[#1e40af] text-[10px] font-extrabold tracking-widest px-3.5 py-1.5 rounded-full flex items-center gap-1.5 border border-blue-400/30 uppercase animate-pulse">
+                    <span class="w-1.5 h-1.5 bg-white rounded-full"></span> DISPONIBLE
+                </span>
+                <span class="text-xs text-blue-100 flex items-center gap-1 font-semibold tracking-wide">
+                    Salta, Argentina <i class="fa-solid fa-location-dot text-[10px]"></i>
+                </span>
+            </div>
+
+            <div class="space-y-4 mb-10 relative z-10">
+                <h3 class="text-3.5xl font-black tracking-tight leading-tight sm:text-4xl">Software<br>a Medida.</h3>
+                <p class="text-base text-blue-50/90 font-medium max-w-xl leading-relaxed">
+                    Transformo flujos de trabajo tradicionales y procesos manuales en plataformas web rápidas, seguras y escalables, ideadas meticulosamente desde el diseño de interfaz hasta la arquitectura del backend.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-20 max-w-xl layer-z-buttons">
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=lucanaimbaldiviezo@gmail.com&su=Contacto%20desde%20tu%20Portfolio" target="_blank" rel="noopener noreferrer" class="bg-white text-black text-sm font-bold py-3.5 px-6 rounded-full flex items-center justify-between hover:bg-gray-100 shadow-md active:scale-95 transition-transform duration-200">
+                    <span class="flex items-center gap-2.5"><i class="fa-solid fa-paper-plane text-base text-blue-600"></i> Hablemos por G-mail</span>
+                    <i class="fa-solid fa-arrow-right text-xs text-gray-400"></i>
+                 </a>
+                <a href="https://instagram.com/lucabaldiviezo" target="_blank" rel="noopener noreferrer" class="bg-white text-black text-sm font-bold py-3.5 px-6 rounded-full flex items-center justify-between hover:bg-gray-100 shadow-md active:scale-95 transition-transform duration-200">
+                    <span class="flex items-center gap-2.5"><i class="fa-brands fa-instagram text-base text-pink-600"></i> Ver Instagram</span>
+                    <i class="fa-solid fa-arrow-right text-xs text-gray-400"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <h4 class="text-xs font-extrabold tracking-widest text-gray-400 dark:text-gray-500 uppercase flex items-center gap-2 px-1">
+                🛠️ Lo que hago y cómo lo hago
+            </h4>
+
+            <div id="skills-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 preserve-3d">
+                <div class="skill-card bg-white dark:bg-[#121620] p-5 rounded-[24px] border border-gray-200/90 dark:border-gray-800/80 shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] space-y-2.5 hover:border-blue-500/50 dark:hover:border-blue-500/50 hover:shadow-[0_10px_25px_rgba(59,130,246,0.15)] transition-all duration-300 active:scale-[0.98] opacity-0 cursor-default">
+                    <div class="flex items-center gap-2.5 text-blue-500 dark:text-blue-400">
+                        <span class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-sm"><i class="fa-solid fa-layer-group"></i></span>
+                        <h5 class="text-base font-bold tracking-tight">Ing. en Software</h5>
+                    </div>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
+                        Diseño soluciones escalables y mantenibles a largo plazo. Aplico patrones de arquitectura eficientes y código limpio.
+                    </p>
+                </div>
+
+                <div class="skill-card bg-white dark:bg-[#121620] p-5 rounded-[24px] border border-gray-200/90 dark:border-gray-800/80 shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] space-y-2.5 hover:border-purple-500/50 dark:hover:border-purple-500/50 hover:shadow-[0_10px_25px_rgba(168,85,247,0.15)] transition-all duration-300 active:scale-[0.98] opacity-0 cursor-default">
+                    <div class="flex items-center gap-2.5 text-purple-500 dark:text-purple-400">
+                        <span class="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center text-sm"><i class="fa-solid fa-network-wired"></i></span>
+                        <h5 class="text-base font-bold tracking-tight">Ing. en Sistemas</h5>
+                    </div>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
+                        Tengo una visión global de la infraestructura informática. Conecto plataformas, optimizo servidores y bases de datos.
+                    </p>
+                </div>
+
+                <div class="skill-card bg-white dark:bg-[#121620] p-5 rounded-[24px] border border-gray-200/90 dark:border-gray-800/80 shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] space-y-2.5 hover:border-emerald-500/50 dark:hover:border-emerald-500/50 hover:shadow-[0_10px_25px_rgba(16,185,129,0.15)] transition-all duration-300 active:scale-[0.98] opacity-0 cursor-default">
+                    <div class="flex items-center gap-2.5 text-emerald-500 dark:text-emerald-400">
+                        <span class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-sm"><i class="fa-solid fa-code"></i></span>
+                        <h5 class="text-base font-bold tracking-tight">Programador</h5>
+                    </div>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
+                        Escribo código sólido y optimizado para transformar ideas lógicas en herramientas funcionales y automatizaciones.
+                    </p>
+                </div>
+
+                <div class="skill-card bg-white dark:bg-[#121620] p-5 rounded-[24px] border border-gray-200/90 dark:border-gray-800/80 shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] space-y-2.5 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 hover:shadow-[0_10px_25px_rgba(99,102,241,0.15)] transition-all duration-300 active:scale-[0.98] opacity-0 cursor-default">
+                    <div class="flex items-center gap-2.5 text-indigo-500 dark:text-indigo-400">
+                        <span class="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 flex items-center justify-center text-sm"><i class="fa-solid fa-brain"></i></span>
+                        <h5 class="text-base font-bold tracking-tight">Especializado en IA</h5>
+                    </div>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
+                        Integro modelos de Inteligencia Artificial para automatizar la toma de decisiones y procesar datos de forma inteligente.
+                    </p>
+                </div>
+
+                <div class="skill-card bg-white dark:bg-[#121620] p-5 rounded-[24px] border border-gray-200/90 dark:border-gray-800/80 shadow-md dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] space-y-2.5 sm:col-span-2 hover:border-amber-500/50 dark:hover:border-amber-500/50 hover:shadow-[0_10px_25px_rgba(245,158,11,0.15)] transition-all duration-300 active:scale-[0.98] opacity-0 cursor-default">
+                    <div class="flex items-center gap-2.5 text-amber-500 dark:text-amber-400">
+                        <span class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center text-sm"><i class="fa-solid fa-palette"></i></span>
+                        <h5 class="text-base font-bold tracking-tight">Creador y Diseñador Web</h5>
+                    </div>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
+                        Diseño interfaces intuitivas modernas enfocadas en la experiencia del usuario (UI/UX) y completamente adaptables.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <h4 class="text-xs font-extrabold tracking-widest text-gray-400 dark:text-gray-500 uppercase flex items-center gap-2 px-1">
+                🚀 Proyectos Destacados
+            </h4>
+
+            <div id="projects-container" class="space-y-4 preserve-3d">
+                
+                <div id="lucai-project-card" class="bg-white dark:bg-[#121620] p-6 rounded-[28px] border border-gray-200/90 dark:border-gray-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-md dark:shadow-[0_4px_25px_rgba(0,0,0,0.35)] opacity-0 transition-all duration-300 preserve-3d relative">
+                    <div class="space-y-3 flex-1 pointer-events-none">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-xs text-white shadow-sm">🤖</span>
+                            <h5 class="text-lg font-bold tracking-tight">LucAI</h5>
+                            <span class="text-xs text-gray-400 dark:text-gray-500 font-semibold">v2.0</span>
+                        </div>
+                        
+                        <div class="layer-z-fast">
+                            <span class="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400 text-[9px] font-black tracking-widest px-3 py-1 rounded-full border border-green-200 dark:border-green-900/60 uppercase">
+                                <span class="w-1.2 h-1.2 bg-green-500 dark:bg-green-400 rounded-full animate-pulse"></span> Activo
+                            </span>
+                        </div>
+                        
+                        <p class="text-xs text-gray-600 dark:text-gray-400 font-medium leading-relaxed max-w-md">
+                            Agente conversacional autónomo e inteligente integrado para responder de inmediato consultas sobre mi stack, experiencia y lógica.
+                        </p>
+                    </div>
+                    
+                    <div class="flex flex-col gap-2 min-w-[160px] w-full sm:w-auto relative z-30 layer-z-buttons">
+                        <button onclick="abrirPanel()" class="w-full bg-neutral-900 dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-gray-100 text-xs font-bold py-2.5 px-3.5 rounded-xl flex items-center justify-between shadow-sm cursor-pointer active:scale-95 transition-all duration-150">
+                            Probar LucAI <i class="fa-solid fa-comments text-[10px] text-gray-400 dark:text-gray-500"></i>
+                        </button>
+                        <a href="https://instagram.com/lucai.ia" target="_blank" rel="noopener noreferrer" class="w-full bg-gray-50 hover:bg-gray-100 dark:bg-gray-800/40 dark:hover:bg-gray-700/50 text-xs font-bold py-2.5 px-3.5 rounded-xl flex items-center justify-between text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-transparent cursor-pointer active:scale-95 transition-all duration-150">
+                            <span class="flex items-center gap-2"><i class="fa-brands fa-instagram text-xs text-pink-600"></i> Instagram</span>
+                            <i class="fa-solid fa-arrow-right text-[10px] text-gray-400 dark:text-gray-600"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="auto-project-card" class="bg-white dark:bg-[#121620] p-6 rounded-[28px] border border-gray-200/90 dark:border-gray-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-md dark:shadow-[0_4px_25px_rgba(0,0,0,0.35)] opacity-0 transition-all duration-300 preserve-3d relative">
+                    <div class="space-y-3 flex-1 pointer-events-none">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-950/60 flex items-center justify-center text-xs text-purple-600 dark:text-purple-300"><i class="fa-regular fa-circle-question"></i></span>
+                            <h5 class="text-lg font-bold tracking-tight">Automatizaciones</h5>
+                        </div>
+                        
+                        <div class="layer-z-fast">
+                            <span class="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-[9px] font-black tracking-widest px-3 py-1 rounded-full border border-blue-200 dark:border-blue-900/60 uppercase">
+                                Cocinando
+                            </span>
+                        </div>
+                        
+                        <p class="text-xs text-gray-600 dark:text-gray-400 font-medium leading-relaxed max-w-md">
+                            Scripts avanzados en Python para el procesamiento estructurado y optimización de tareas locales.
+                        </p>
+                    </div>
+                    
+                    <div class="flex flex-col gap-2 min-w-[160px] w-full sm:w-auto relative z-30 layer-z-buttons">
+                        <button disabled class="bg-gray-100/50 dark:bg-gray-800/20 text-gray-400 dark:text-gray-600 text-xs font-bold py-2.5 px-3.5 rounded-xl flex items-center justify-between cursor-not-allowed w-full">
+                            Sitio web <i class="fa-solid fa-lock text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-tag" class="bg-white dark:bg-[#121620] p-5 rounded-[24px] border border-gray-200/90 dark:border-gray-800/80 flex items-center gap-3.5 shadow-md dark:shadow-[0_4px_15px_rgba(0,0,0,0.2)] opacity-0 transition-all duration-300 preserve-3d hover:border-blue-500/40 dark:hover:border-blue-500/40">
+            <div class="text-blue-500 text-lg">
+                <i class="fa-solid fa-code-branch"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold tracking-tight">Siempre construyendo.</p>
+                <p class="text-[11px] text-gray-400 dark:text-gray-500 font-medium mt-0.5">Nuevas ideas, mejores sistemas.</p>
+            </div>
+        </div>
+
+        <div class="text-center pt-2 pb-6">
+            <p class="text-[11px] font-semibold tracking-wider text-gray-400/80 dark:text-neutral-600 uppercase cursor-default select-none transition-colors duration-300 hover:text-gray-600 dark:hover:text-neutral-400">
+                Desarrollado con por Luca Baldiviezo.
+            </p>
+        </div>
+
+    </div>
+
+    <div id="chatPanel" style="display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 100; justify-content: flex-end;">
+        <div id="chatContent" style="transform: translateX(100%); transition: transform 0.3s ease-out;" class="w-full max-w-md bg-white dark:bg-[#090b10] border-l border-gray-200 dark:border-neutral-900 h-full flex flex-col justify-between shadow-2xl">
+            
+            <div class="p-4 border-b border-gray-200 dark:border-neutral-900 flex items-center justify-between bg-gray-50 dark:bg-neutral-950">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-full bg-crimson-600/10 border border-crimson-600/20 flex items-center justify-center text-sm">🤖</div>
+                    <div>
+                        <h3 class="text-xs font-bold tracking-wide">LucAI</h3>
+                        <p class="text-[10px] text-emerald-500 dark:text-emerald-400 font-medium flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span> Activo
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="reiniciarChat()" title="Reiniciar chat" class="text-gray-400 hover:text-gray-900 dark:hover:text-white text-xs p-1.5 cursor-pointer transition-colors rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-800">
+                        <i class="fa-solid fa-arrow-rotate-left"></i>
+                    </button>
+                    <button onclick="cerrarPanel()" class="text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm p-1 cursor-pointer transition-colors">✕</button>
+                </div>
+            </div>
+
+            <div id="chatBody" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <div id="chatWelcome" class="space-y-6 py-4">
+                    <div class="text-center space-y-2">
+                        <p class="text-gray-600 dark:text-neutral-300 text-xs font-medium px-4 leading-relaxed">
+                            ¡Hola! Soy LucAI, el asistente automatizado del portfolio de Luca. ¿Qué te gustaría saber sobre él?
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <p class="text-[10px] uppercase text-gray-400 dark:text-neutral-500 tracking-wider font-extrabold">Consultas sugeridas</p>
+                        <div class="flex flex-col gap-2">
+                            <button onclick="enviarSugerencia('¿Quién es Luca?')" class="w-full text-left bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-900/80 border border-gray-200 dark:border-neutral-800/80 px-3 py-2.5 rounded-xl text-[11px] font-medium transition-all cursor-pointer">¿Quién es Luca?</button>
+                            <button onclick="enviarSugerencia('¿Qué tecnologías usa?')" class="w-full text-left bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-900/80 border border-gray-200 dark:border-neutral-800/80 px-3 py-2.5 rounded-xl text-[11px] font-medium transition-all cursor-pointer">¿Qué tecnologías usa?</button>
+                            <button onclick="enviarSugerencia('¿Qué proyectos tiene?')" class="w-full text-left bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-900/80 border border-gray-200 dark:border-neutral-800/80 px-3 py-2.5 rounded-xl text-[11px] font-medium transition-all cursor-pointer">¿Qué proyectos tiene?</button>
+                            <button onclick="enviarSugerencia('Activar Modo Reclutador')" class="w-full text-left bg-crimson-600/10 hover:bg-crimson-600/20 border border-crimson-600/20 px-3 py-2.5 rounded-xl text-[11px] text-crimson-400 font-bold transition-all cursor-pointer">Activar Modo Reclutador</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dynamicMessages" class="space-y-4 hidden"></div>
+
+                <div id="loadingIndicator" class="flex items-start space-x-2.5 hidden">
+                    <div class="w-7 h-7 rounded-full bg-gray-100 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 flex items-center justify-center text-xs">🤖</div>
+                    <div class="bg-gray-100 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3.5 py-2 rounded-2xl rounded-tl-none flex space-x-1 items-center h-8">
+                        <div class="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                        <div class="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                        <div class="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3 border-t border-gray-200 dark:border-neutral-900 bg-white dark:bg-neutral-950 flex items-center gap-2">
+                <input type="text" id="chatInput" onkeypress="manejarKeyPress(event)" placeholder="Escribí tu mensaje acá..." class="flex-1 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800/80 placeholder-gray-400 dark:placeholder-neutral-500 rounded-xl px-3 py-2.5 text-xs font-medium focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-700 transition-colors">
+                <button onclick="enviarMensajeInput()" class="bg-crimson-600 hover:bg-red-700 text-white w-9 h-9 rounded-xl flex items-center justify-center transition-colors shadow-sm cursor-pointer shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                    </svg>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Animación de entrada inicial para títulos
+            gsap.from("#intro-titles h2", {
+                opacity: 0,
+                x: -30,
+                stagger: 0.2,
+                duration: 1,
+                ease: "power3.out"
+            });
+
+            // Animación Hero Card
+            gsap.to("#hero-card", {
+                scrollTrigger: {
+                    trigger: "#hero-card",
+                    start: "top 90%",
+                    toggleActions: "play none none none"
+                },
+                opacity: 1,
+                y: 0,
+                duration: 1.2,
+                ease: "power4.out"
+            });
+
+            // Animación de entrada para skills
+            gsap.to("#skills-container .skill-card", {
+                scrollTrigger: {
+                    trigger: "#skills-container",
+                    start: "top 85%"
+                },
+                opacity: 1,
+                y: 0,
+                rotationX: 0,
+                transformPerspective: 1000,
+                stagger: 0.12,
+                duration: 1,
+                ease: "back.out(1.4)"
+            });
+
+            // Animación de entrada para proyectos y footer
+            gsap.to("#projects-container > div, #footer-tag", {
+                scrollTrigger: {
+                    trigger: "#projects-container",
+                    start: "top 85%"
+                },
+                opacity: 1,
+                rotationX: 0,
+                transformPerspective: 1000,
+                stagger: 0.15,
+                duration: 1.1,
+                ease: "back.out(1.2)"
+            });
+
+            // --- INTERACTIVIDAD 3D PURA (Solo rotación de tarjeta, botones estables) ---
+            const isDesktop = window.innerWidth > 768;
+
+            if (isDesktop) {
+                const heroCard = document.getElementById("hero-card");
+                if (heroCard) {
+                    heroCard.addEventListener("mousemove", (e) => {
+                        const rect = heroCard.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        gsap.to(heroCard, { rotateX: -y * 0.03, rotateY: x * 0.03, duration: 0.3 });
+                    });
+                    heroCard.addEventListener("mouseleave", () => {
+                        gsap.to(heroCard, { rotateX: 0, rotateY: 0, duration: 0.6 });
+                    });
+                }
+
+                // LucAI Card 3D sutil con aceleración limpia y empuje Z
+                const lucaiCard = document.getElementById("lucai-project-card");
+                if (lucaiCard) {
+                    lucaiCard.addEventListener("mousemove", (e) => {
+                        const rect = lucaiCard.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        
+                        gsap.to(lucaiCard, {
+                            rotateX: -y * 0.06,
+                            rotateY: x * 0.06,
+                            z: 10,
+                            transformPerspective: 1000,
+                            duration: 0.3,
+                            ease: "power2.out"
+                        });
+                    });
+                    lucaiCard.addEventListener("mouseleave", () => {
+                        gsap.to(lucaiCard, { rotateX: 0, rotateY: 0, z: 0, duration: 0.6, ease: "power2.out" });
+                    });
+                }
+
+                // Automatizaciones Card 3D sutil y empuje Z
+                const autoCard = document.getElementById("auto-project-card");
+                if (autoCard) {
+                    autoCard.addEventListener("mousemove", (e) => {
+                        const rect = autoCard.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        
+                        gsap.to(autoCard, {
+                            rotateX: -y * 0.06,
+                            rotateY: x * 0.06,
+                            z: 10,
+                            transformPerspective: 1000,
+                            duration: 0.3,
+                            ease: "power2.out"
+                        });
+                    });
+                    autoCard.addEventListener("mouseleave", () => {
+                        gsap.to(autoCard, { rotateX: 0, rotateY: 0, z: 0, duration: 0.6, ease: "power2.out" });
+                    });
+                }
+
+                const footerCard = document.getElementById("footer-tag");
+                if (footerCard) {
+                    footerCard.addEventListener("mousemove", (e) => {
+                        const rect = footerCard.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        gsap.to(footerCard, { rotateX: -y * 0.04, rotateY: x * 0.04, transformPerspective: 1000, duration: 0.3 });
+                    });
+                    footerCard.addEventListener("mouseleave", () => {
+                        gsap.to(footerCard, { rotateX: 0, rotateY: 0, duration: 0.5 });
+                    });
+                }
+            }
+        });
+
+        // --- LÓGICA DE PANEL Y CHAT ---
+        const chatPanel = document.getElementById('chatPanel');
+        const chatContent = document.getElementById('chatContent');
+        const chatBody = document.getElementById('chatBody');
+        const chatInput = document.getElementById('chatInput');
+        const chatWelcome = document.getElementById('chatWelcome');
+        const dynamicMessages = document.getElementById('dynamicMessages');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+
+        function abrirPanel() {
+            chatPanel.style.display = 'flex';
+            setTimeout(() => {
+                chatContent.style.transform = 'translateX(0)';
+                chatInput.focus();
+            }, 10);
+        }
+
+        function cerrarPanel() {
+            chatContent.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                chatPanel.style.display = 'none';
+            }, 300);
+        }
+
+        document.getElementById('chatPanel').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarPanel();
+            }
+        });
+
+        function reiniciarChat() {
+            dynamicMessages.innerHTML = '';
+            dynamicMessages.classList.add('hidden');
+            chatWelcome.classList.remove('hidden');
+            chatInput.value = '';
+            chatInput.focus();
+        }
+
+        function cambiarModo() {
+            const htmlElement = document.documentElement;
+            const themeToggleIcon = document.getElementById('theme-toggle-icon');
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                themeToggleIcon.className = "fa-solid fa-moon text-lg";
+            } else {
+                htmlElement.classList.add('dark');
+                themeToggleIcon.className = "fa-solid fa-sun text-lg";
+            }
+        }
+
+        const RESPUESTAS_LOCALES = {
+            "contacto": "Podés contactar a Luca a través de su correo electrónico o redes sociales si activás el Modo Reclutador.",
+            "perfil": "Luca es un desarrollador y estudiante de ingeniería de software de 22 años, enfocado en el desarrollo con Python y la integración de Inteligencia Artificial.",
+            "stack": "El núcleo tecnológico de Luca se centra en Python, desarrollo de scripts de automatización y diseño de lógica para IA.",
+            "enfoque": "Luca cuenta con la capacidad de comprender tanto la lógica de negocio en el Backend como la integración de interfaces en el Frontend.",
+            "logica": "Luca posee una sólida base en pensamiento analítico, diseño de algoritmos eficientes y estructuras de datos complejas.",
+            "programacion": "Luca posee una sólida base en pensamiento analítico, diseño de algoritmos eficientes y estructuras de datos complejas.",
+            "resolucion": "Luca aplica un enfoque metódico para el debugging, la optimización de código y la resolución de fallas en entornos de desarrollo.",
+            "bugs": "Luca aplica un enfoque metódico para el debugging, la optimización de código y la resolución de fallas en entornos de desarrollo.",
+            "proyectos": "Luca diseña y ejecuta herramientas prácticas orientadas a la automatización de procesos y el procesamiento inteligente de datos.",
+            "aprendizaje": "Luca se mantiene actualizado de manera autodidacta mediante la documentación técnica y las últimas tendencias en ingeniería de software.",
+            "autonomo": "Luca se mantiene actualizado de manera autodidacta mediante la documentación técnica y las últimas tendencias en ingeniería de software.",
+            "herramientas": "Luca domina el uso de entornos de desarrollo (IDEs), sistemas de control de versiones y metodologías ágiles de software.",
+            "hardware": "Luca posee competencias avanzadas en hardware de PC, ensamble y arquitectura de sistemas para optimizar entornos de desarrollo locales.",
+            "metas": "El objetivo de Luca es integrarse a equipos de desarrollo donde pueda implementar modelos de machine learning y arquitecturas Full Stack escalables.",
+            "trabajo equipo": "Luca colabora eficientemente con diseñadores, ingenieros de datos y equipos de QA para asegurar entregas de software de alta calidad.",
+            "adaptabilidad tecnologica": "Luca asimila con rapidez nuevos lenguajes de programación, frameworks y herramientas que el proyecto requiera.",
+            "optimizacion codigo": "Luca prioriza la escritura de código limpio, mantenible y documentado, siguiendo las buenas prácticas de la industria (Clean Code).",
+            "mama": "La madre de Luca es Mili Baldiviezo, quien representa un pilar fundamental en su vida y desarrollo personal.",
+            "madre": "La madre de Luca es Mili Baldiviezo, quien representa un pilar fundamental en su vida y desarrollo personal.",
+            "mamá": "La madre de Luca es Mili Baldiviezo, quien representa un pilar fundamental en su vida y desarrollo personal.",
+            "hermanos": "Luca tiene dos hermanos, Ivo Baldiviezo e Ivan Baldiviezo, con quienes comparte un fuerte vínculo familiar.",
+            "pareja": "La mujer de Luca es Jazmin Villafañes, a quien ama profundamente y es su compañera de vida y principal apoyo en sus proyectos.",
+            "valores personales": "El entorno familiar compuesto por Mili, Ivo, Ivan y su pareja Jazmin constituye el motor diario de superación y compromiso profesional de Luca.",
+            "hola": "¡Hola! ¿Cómo estás? Contame, ¿en qué te puedo ayudar hoy respecto a Luca?",
+            "cv": "Luca preparó su CV orientado al sector de Programación e Inteligencia Artificial.",
+            "jazmin": "El amor de su vida, su mujer, su motivacion, su bebe, su amor, y los adjetivos que faltan, para simplificarlo Jazmin es la razon por la que sonrie cada dia. La ama, ama.",
+            "luca me ama?": "Eso depende, ¿te llamás Jazmin Villafañes? Si es así entonces sí y mucho, solo habla de vos el boludo.",
+            "quien es jazmin?": "Jazmin Villafañes es el amor de la vida de Luca, la futura esposa y futura madre de los hijos de él.",
+            "hobbie": "En sus tiempos libres, a Luca le interesa mucho el fútbol, el arte del tatuaje y está enfocado con la programación en Python enfocada en IA.",
+            "secreto": "Encontraste un comando oculto. Luca es conocido por algunos como 'El ángel caído' debido a sus grandes capacidades.",
+            "¿quién es luca?": "Luca Baldiviezo es un desarrollador fullstack de 23 años oriundo de Salta, Argentina. Combina su formacion en TECLAB con un fuerte perfil autodidacta. Se especializa en frontend y en ingenieria de inteligencia Artificial, creando productos completos e integrando IA generativa de manera estratégica para aportar valor real.",
+            "¿qué proyectos tiene?": "Luca cuenta con varios proyectos en su portafolio, incluyendo este mismo asistente inteligente (LucAI), calculadoras funcionales en Python y sistemas de automatización. 1) Asistente de IA de servicios, Un agente conversacional inteligente y autónomo integrado en su web. 2) Diseñador Web, Creo el sitio que tu negocio necesita para vender más. 3) Creador y fundador de LucAI, Un asistente de IA integrado en su portfolio para responder preguntas sobre sus proyectos, stack y experiencia.",
+            "¿qué tecnologías usa?": "Domina principalmente Python enfocado en IA, JavaScript, HTML, CSS, Tailwind CSS para interfaces modernas y herramientas de desarrollo backend.",
+            "hablame sobre su educación": "Luca se encuentra en constante formación autodidacta y guiada, especializándose en lógica de programación, inteligencia artificial y optimización de software.",
+            "activar modo reclutador": "¡Modo Reclutador Activo! Luca está disponible para puestos en desarrollo de software, desarrollo web y programación. Podés contactarlo para agendar una entrevista."
+        };
+
+        function scrollAlFinal() {
+            chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: 'smooth' });
+        }
+
+        function manejarKeyPress(e) {
+            if (e.key === 'Enter') {
+                enviarMensajeInput();
+            }
+        }
+
+        function enviarMensajeInput() {
+            const texto = chatInput.value;
+            if (!texto.trim()) return;
+            chatInput.value = '';
+            procesarEnvio(texto);
+        }
+
+        function enviarSugerencia(texto) {
+            procesarEnvio(texto);
+        }
+
+        function agregarMensajeHTML(texto, remitente) {
+            const burbuja = document.createElement('div');
+            burbuja.className = `flex items-start space-x-2.5 ${remitente === 'usuario' ? 'justify-end' : ''}`;
+            
+            if (remitente === 'usuario') {
+                burbuja.innerHTML = `
+                    <div class="bg-crimson-600 text-white px-3.5 py-2 rounded-2xl rounded-tr-none text-[11px] font-medium max-w-[75%] shadow-sm leading-relaxed">${texto}</div>
+                `;
+            } else {
+                burbuja.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-gray-100 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 flex items-center justify-center text-xs">🤖</div>
+                    <div class="bg-gray-100 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3.5 py-2 rounded-2xl rounded-tl-none text-[11px] text-gray-800 dark:text-neutral-200 font-medium shadow-sm leading-relaxed">${texto}</div>
+                `;
+            }
+            dynamicMessages.appendChild(burbuja);
+        }
+
+        async function agregarMensajeEfectoMaquina(texto) {
+            const burbuja = document.createElement('div');
+            burbuja.className = "flex items-start space-x-2.5";
+            
+            const avatar = document.createElement('div');
+            avatar.className = "w-7 h-7 rounded-full bg-gray-100 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 flex items-center justify-center text-xs";
+            avatar.innerText = "🤖";
+            
+            const contenedorTexto = document.createElement('div');
+            contenedorTexto.className = "bg-gray-100 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3.5 py-2 rounded-2xl rounded-tl-none text-[11px] text-gray-800 dark:text-neutral-200 font-medium shadow-sm leading-relaxed";
+            
+            burbuja.appendChild(avatar);
+            burbuja.appendChild(contenedorTexto);
+            dynamicMessages.appendChild(burbuja);
+
+            let i = 0;
+            return new Promise((resolve) => {
+                function escribir() {
+                    if (i < texto.length) {
+                        contenedorTexto.innerHTML += texto.charAt(i);
+                        i++;
+                        scrollAlFinal();
+                        setTimeout(escribir, 12);
+                    } else {
+                        resolve();
+                    }
+                }
+                escribir();
+            });
+        }
+
+        async function procesarEnvio(texto) {
+            if (chatWelcome && !chatWelcome.classList.contains('hidden')) {
+                chatWelcome.classList.add('hidden');
+                dynamicMessages.classList.remove('hidden');
+            }
+
+            agregarMensajeHTML(texto, 'usuario');
+            loadingIndicator.classList.remove('hidden');
+            scrollAlFinal();
+
+            const textoNormalizado = texto.toLowerCase().trim();
+            let respuestaBot = null;
+
+            for (const clave in RESPUESTAS_LOCALES) {
+                if (textoNormalizado.includes(clave.toLowerCase())) {
+                    respuestaBot = RESPUESTAS_LOCALES[clave];
+                    break; 
+                }
+            }
+
+            if (!respuestaBot) {
+                respuestaBot = "No encontré una respuesta específica para eso en el perfil de Luca. Podés intentar preguntarme sobre su 'perfil', sus 'proyectos' o 'activar modo reclutador'.";
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 600));
+            
+            loadingIndicator.classList.add('hidden');
+            await agregarMensajeEfectoMaquina(respuestaBot);
+            scrollAlFinal();
+        }
+    </script>
+</body>
+</html>

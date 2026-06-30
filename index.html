@@ -47,7 +47,7 @@
         }
 
         /* Efecto de brillo y transición sutil para las tarjetas de proyectos */
-        #lucai-project-card, #auto-project-card, #arq-project-card {
+        #lucai-project-card, #auto-project-card {
             transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
             will-change: transform, box-shadow;
         }
@@ -62,12 +62,6 @@
         #auto-project-card:hover {
             border-color: rgba(168, 85, 247, 0.4) !important;
             box-shadow: 0 10px 30px -10px rgba(168, 85, 247, 0.25), 0 4px 25px rgba(0, 0, 0, 0.35) !important;
-        }
-
-        /* Brillo rosa adaptativo para Arquitectura */
-        #arq-project-card:hover {
-            border-color: rgba(140, 72, 96) !important;
-            box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.25), 0 4px 25px rgba(0, 0, 0, 0.35) !important;
         }
     </style>
     <script>
@@ -124,7 +118,7 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-20 max-w-xl layer-z-buttons">
-                <a href="mailto:lucanaimbaldiviezo@gmail.com?subject=Contacto%20desde%20tu%20Portfolio" class="bg-white text-black text-sm font-bold py-3.5 px-6 rounded-full flex items-center justify-between hover:bg-gray-100 shadow-md active:scale-95 transition-transform duration-200">
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=lucanaimbaldiviezo@gmail.com&su=Contacto%20desde%20tu%20Portfolio" target="_blank" rel="noopener noreferrer" class="bg-white text-black text-sm font-bold py-3.5 px-6 rounded-full flex items-center justify-between hover:bg-gray-100 shadow-md active:scale-95 transition-transform duration-200">
                     <span class="flex items-center gap-2.5"><i class="fa-solid fa-paper-plane text-base text-blue-600"></i> Hablemos por G-mail</span>
                     <i class="fa-solid fa-arrow-right text-xs text-gray-400"></i>
                  </a>
@@ -195,7 +189,7 @@
 
         <div class="space-y-4">
             <h4 class="text-xs font-extrabold tracking-widest text-gray-400 dark:text-gray-500 uppercase flex items-center gap-2 px-1">
-                🚀 Proyectos 
+                🚀 Proyectos Destacados
             </h4>
 
             <div id="projects-container" class="space-y-4 preserve-3d">
@@ -254,36 +248,6 @@
                         </button>
                     </div>
                 </div>
-
-                <div id="arq-project-card" class="bg-white dark:bg-[#121620] p-6 rounded-[28px] border border-gray-200/90 dark:border-gray-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-md dark:shadow-[0_4px_25px_rgba(0,0,0,0.35)] opacity-0 transition-all duration-300 preserve-3d relative">
-                    <div class="space-y-3 flex-1 pointer-events-none">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-950/60 flex items-center justify-center text-xs text-pink-600 dark:text-pink-300"><i class="fa-solid fa-compass-drafting"></i></span>
-                            <h5 class="text-lg font-bold tracking-tight">Arquitectura</h5>
-                        </div>
-                        
-                        <div class="layer-z-fast">
-                            <span class="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400 text-[9px] font-black tracking-widest px-3 py-1 rounded-full border border-green-200 dark:border-green-900/60 uppercase">
-                                Activo
-                            </span>
-                        </div>
-                        
-                        <p class="text-xs text-gray-600 dark:text-gray-400 font-medium leading-relaxed max-w-md">
-                            Diseños espaciales, renders y modelados tridimensionales con un enfoque contemporáneo y funcional.
-                        </p>
-                    </div>
-                    
-                    <div class="flex flex-col gap-2 min-w-[160px] w-full sm:w-auto relative z-30 layer-z-buttons">
-                        <a href="https://lucabuilder.vercel.app/" target="_blank" rel="noopener noreferrer" class="w-full bg-neutral-900 dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-gray-100 text-xs font-bold py-2.5 px-3.5 rounded-xl flex items-center justify-between shadow-sm cursor-pointer active:scale-95 transition-all duration-150">
-                            Sitio web <i class="fa-solid fa-globe text-[10px] text-gray-400 dark:text-gray-500"></i>
-                        </a>
-                        <a href="https://www.instagram.com/luca.builder?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" class="w-full bg-gray-50 hover:bg-gray-100 dark:bg-gray-800/40 dark:hover:bg-gray-700/50 text-xs font-bold py-2.5 px-3.5 rounded-xl flex items-center justify-between text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-transparent cursor-pointer active:scale-95 transition-all duration-150">
-                            <span class="flex items-center gap-2"><i class="fa-brands fa-instagram text-xs text-pink-600"></i> Instagram</span>
-                            <i class="fa-solid fa-arrow-right text-[10px] text-gray-400 dark:text-gray-600"></i>
-                        </a>
-                    </div>
-                </div>
-
             </div>
         </div>
 
@@ -424,7 +388,62 @@
                 ease: "back.out(1.2)"
             });
 
-            // --- INTERACTIVIDAD 3D PURA (Solo rotación de tarjeta, botones estables) ---
+            // --- ✨ ANIMACIONES EXCLUSIVAS PARA CELULARES (Efecto Parallax al hacer Scroll) ---
+            if (window.innerWidth <= 768) {
+                // El Hero Card se inclina levemente y se desvanece al scrollear hacia abajo
+                gsap.to("#hero-card", {
+                    scrollTrigger: {
+                        trigger: "#hero-card",
+                        start: "top 20%",
+                        end: "bottom top",
+                        scrub: 1
+                    },
+                    y: -20,
+                    rotateX: -5,
+                    opacity: 0.85
+                });
+
+                // Efecto de balanceo sutil en las tarjetas de habilidades al pasar el scroll
+                gsap.utils.toArray(".skill-card").forEach((card) => {
+                    gsap.fromTo(card, 
+                        { rotateX: -8, y: 15 },
+                        {
+                            scrollTrigger: {
+                                trigger: card,
+                                start: "top bottom",
+                                end: "bottom top",
+                                scrub: 1
+                            },
+                            rotateX: 8,
+                            y: -15,
+                            ease: "none"
+                        }
+                    );
+                });
+
+                // Movimiento fluido para las tarjetas de proyectos y tag de pie de página
+                ["#lucai-project-card", "#auto-project-card", "#footer-tag"].forEach((id) => {
+                    const el = document.getElementById(id.replace('#', ''));
+                    if (el) {
+                        gsap.fromTo(el,
+                            { rotateY: -4, y: 10 },
+                            {
+                                scrollTrigger: {
+                                    trigger: el,
+                                    start: "top bottom",
+                                    end: "bottom top",
+                                    scrub: 1.2
+                                },
+                                rotateY: 4,
+                                y: -10,
+                                ease: "none"
+                            }
+                        );
+                    }
+                });
+            }
+
+            // --- INTERACTIVIDAD 3D PURA (Solo para Escritorio) ---
             const isDesktop = window.innerWidth > 768;
 
             if (isDesktop) {
@@ -482,28 +501,6 @@
                     });
                     autoCard.addEventListener("mouseleave", () => {
                         gsap.to(autoCard, { rotateX: 0, rotateY: 0, z: 0, duration: 0.6, ease: "power2.out" });
-                    });
-                }
-
-                // Arquitectura Card 3D sutil y empuje Z
-                const arqCard = document.getElementById("arq-project-card");
-                if (arqCard) {
-                    arqCard.addEventListener("mousemove", (e) => {
-                        const rect = arqCard.getBoundingClientRect();
-                        const x = e.clientX - rect.left - rect.width / 2;
-                        const y = e.clientY - rect.top - rect.height / 2;
-                        
-                        gsap.to(arqCard, {
-                            rotateX: -y * 0.06,
-                            rotateY: x * 0.06,
-                            z: 10,
-                            transformPerspective: 1000,
-                            duration: 0.3,
-                            ease: "power2.out"
-                        });
-                    });
-                    arqCard.addEventListener("mouseleave", () => {
-                        gsap.to(arqCard, { rotateX: 0, rotateY: 0, z: 0, duration: 0.6, ease: "power2.out" });
                     });
                 }
 
@@ -586,7 +583,7 @@
             "autonomo": "Luca se mantiene actualizado de manera autodidacta mediante la documentación técnica y las últimas tendencias en ingeniería de software.",
             "herramientas": "Luca domina el uso de entornos de desarrollo (IDEs), sistemas de control de versiones y metodologías ágiles de software.",
             "hardware": "Luca posee competencias avanzadas en hardware de PC, ensamble y arquitectura de sistemas para optimizar entornos de desarrollo locales.",
-            "metas": "El objetivo de Luca es integrarse a equipos de desarrollo donde pueda implement modelos de machine learning y arquitecturas Full Stack escalables.",
+            "metas": "El objetivo de Luca es integrarse a equipos de desarrollo donde pueda implementar modelos de machine learning y arquitecturas Full Stack escalables.",
             "trabajo equipo": "Luca colabora eficientemente con diseñadores, ingenieros de datos y equipos de QA para asegurar entregas de software de alta calidad.",
             "adaptabilidad tecnologica": "Luca asimila con rapidez nuevos lenguajes de programación, frameworks y herramientas que el proyecto requiera.",
             "optimizacion codigo": "Luca prioriza la escritura de código limpio, mantenible y documentado, siguiendo las buenas prácticas de la industria (Clean Code).",
